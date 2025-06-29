@@ -1,4 +1,8 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Kata.Wallet.Database;
+using Kata.Wallet.Database.DI;
+using Kata.Wallet.Services.DI;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,11 +10,18 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddDbContext<DataContext>();
 
+builder.Services.AddInfrastructureServices();
+builder.Services.AddApplicationServices();
+
 builder.Services.AddControllers().AddJsonOptions(x =>
 {
     // serialize enums as strings in api responses 
     x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-}); ;
+});
+
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();    
+builder.Services.AddFluentValidationAutoValidation();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
