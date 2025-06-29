@@ -1,4 +1,5 @@
-﻿using Kata.Wallet.Dtos;
+﻿using Kata.Wallet.Domain;
+using Kata.Wallet.Dtos;
 using Kata.Wallet.Services.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,7 +26,6 @@ public class TransactionController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> Create([FromBody] TransactionDto transaction)
     {
-        await _transactionService.Create(transaction);
-        return Ok();
+        return CreatedAtAction(nameof(Create), new { id = await _transactionService.Create(transaction) });
     }
 }

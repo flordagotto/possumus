@@ -33,4 +33,48 @@ public class DataContext : DbContext, IUnitOfWork
         modelBuilder.Entity<Domain.Wallet>().HasMany(x => x.IncomingTransactions).WithOne(x => x.WalletIncoming);
         modelBuilder.Entity<Domain.Wallet>().HasMany(x => x.OutgoingTransactions).WithOne(x => x.WalletOutgoing);
     }
+
+    public static class DbContextSeed
+    {
+        public static async Task SeedAsync(DataContext context)
+        {
+            context.Wallets.AddRange(
+                new Domain.Wallet
+                {
+                    Id = 1,
+                    Balance = 500,
+                    Currency = Currency.ARS,
+                    UserName = "Florencia Dagotto",
+                    UserDocument = "123456789"
+                },
+                new Domain.Wallet
+                {
+                    Id = 2,
+                    Balance = 300,
+                    Currency = Currency.ARS,
+                    UserName = "Juan Medina",
+                    UserDocument = "987654321"
+                },
+                new Domain.Wallet
+                {
+                    Id = 3,
+                    Balance = 300,
+                    Currency = Currency.EUR,
+                    UserName = "Milagros Bustos",
+                    UserDocument = "9876543"
+                },
+                new Domain.Wallet
+                {
+                    Id = 4,
+                    Balance = 0,
+                    Currency = Currency.ARS,
+                    UserName = "Alejandro Lopez",
+                    UserDocument = "1234567"
+                }
+            );
+
+            await context.SaveChangesAsync();
+        }
+    }
+
 }
