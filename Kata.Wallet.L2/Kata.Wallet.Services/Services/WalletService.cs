@@ -46,7 +46,7 @@ namespace Kata.Wallet.Services.Services
             var wallet = await _walletRepository.GetById(walletDto.Id);
 
             if (wallet != null)
-                throw new WalletAlreadyExistsException();
+                throw new WalletAlreadyExistsException($"The wallet with id {wallet.Id} already exists");
         }
     }
 }
