@@ -1,14 +1,18 @@
 ﻿using AutoMapper;
 using Kata.Wallet.Database.Repositories;
+using Kata.Wallet.Domain;
 using Kata.Wallet.Dtos;
 using Kata.Wallet.Services.Exceptions;
 using Microsoft.Extensions.Logging;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Kata.Wallet.Services.Services
 {
     public interface IWalletService
     {
         Task Create(WalletDto wallet);
+
+        Task<List<WalletDto>> GetAll(string? document, Currency? currency);
     }
 
     public class WalletService : IWalletService
@@ -41,12 +45,45 @@ namespace Kata.Wallet.Services.Services
             }
         }
 
+        public async Task<List<WalletDto>> GetAll(string? document, Currency? currency)
+        {
+            try
+            {
+                var wallets = await _walletRepository.GetAll(document, currency);
+
+                var walletDtos = MapWallets(wallets);
+
+                return walletDtos;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, $"Error retrieving wallets, please try again.");
+                throw;
+            }
+        }
+
         private async Task CheckIfWalletAlreadyExists(WalletDto walletDto)
         {
             var wallet = await _walletRepository.GetById(walletDto.Id);
 
             if (wallet != null)
                 throw new WalletAlreadyExistsException($"The wallet with id {wallet.Id} already exists");
+        }
+
+        private List<WalletDto> MapWallets(List<Domain.Wallet> wallets)
+        {
+            List<WalletDto> walletDtos = new List<WalletDto>();
+
+            if (wallets != null && wallets.Count != 0)
+            {
+                foreach (var wallet in wallets)
+                {
+                    var walletDto = _mapper.Map<WalletDto>(wallet);
+                    walletDtos.Add(walletDto);
+                }
+            }
+            
+            return walletDtos;
         }
     }
 }
