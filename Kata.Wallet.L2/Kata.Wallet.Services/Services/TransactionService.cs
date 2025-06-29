@@ -104,6 +104,10 @@ namespace Kata.Wallet.Services.Services
                 foreach (var transaction in transactions)
                 {
                     var transactionDto = _mapper.Map<TransactionDto>(transaction);
+
+                    transactionDto.OriginWalletId = transaction.WalletOutgoing.Id;
+                    transactionDto.DestinationWalletId = transaction.WalletIncoming.Id;
+
                     transactionDtos.Add(transactionDto);
                 }
             }
