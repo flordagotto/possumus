@@ -1,3 +1,4 @@
+using Castle.Core.Logging;
 using FluentAssertions;
 using Kata.Wallet.Database.Repositories;
 using Kata.Wallet.Domain;
@@ -49,6 +50,18 @@ namespace UnitTests
             await act.Should().ThrowAsync<WalletAlreadyExistsException>("The wallet with id 1 already exists");
 
             _mocker.GetMock<IWalletRepository>().Verify(x => x.Add(It.IsAny<Wallet>()), Times.Never);
+        }
+
+        [Test]
+        public async Task GetAll_HappyPath()
+        {
+            var walletDto1 = new WalletDto { Id = 1, Balance = 100, Currency = Currency.ARS, UserDocument = "123456789", UserName = "Florencia Dagotto" };
+            var walletDto2 = new WalletDto { Id = 2, Balance = 200, Currency = Currency.USD, UserDocument = "123456789", UserName = "Florencia Dagotto" };
+            var walletDto = new WalletDto { Id = 3, Balance = 200, Currency = Currency.USD, UserDocument = "987654321", UserName = "Juan Medina" };
+
+            await _service.GetAll("123456789", null);
+
+            _mocker.GetMock<IWalletRepository>().Verify(x => x.GetAll(It.IsAny<string>(), It.IsAny<Currency>()), Times.Once);
         }
     }
 }
