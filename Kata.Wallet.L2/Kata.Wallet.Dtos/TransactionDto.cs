@@ -6,4 +6,6 @@ public class TransactionDto
     public decimal Amount { get; set; }
     public DateTime Date { get; set; }
     public string? Description { get; set; }
+    public int OriginWalletId { get; set; }
+    public int DestinationWalletId { get; set; }
 }
