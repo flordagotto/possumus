@@ -1,6 +1,5 @@
 ﻿using Kata.Wallet.Domain;
 using Microsoft.EntityFrameworkCore;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Kata.Wallet.Database.Repositories
 {

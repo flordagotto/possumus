@@ -4,7 +4,6 @@ using Kata.Wallet.Domain;
 using Kata.Wallet.Dtos;
 using Kata.Wallet.Services.Exceptions;
 using Microsoft.Extensions.Logging;
-using System.Reflection.Metadata.Ecma335;
 
 namespace Kata.Wallet.Services.Services
 {
