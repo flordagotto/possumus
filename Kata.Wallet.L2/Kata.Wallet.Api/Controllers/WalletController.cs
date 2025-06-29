@@ -1,4 +1,5 @@
 ﻿using Kata.Wallet.Dtos;
+using Kata.Wallet.Services.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kata.Wallet.API.Controllers;
@@ -7,6 +8,13 @@ namespace Kata.Wallet.API.Controllers;
 [Route("api/[controller]")]
 public class WalletController : ControllerBase
 {
+
+    public readonly IWalletService _walletService;
+
+    public WalletController(IWalletService walletService)
+    {
+        _walletService = walletService;
+    }
 
     [HttpGet]
     public async Task<ActionResult<List<Domain.Wallet>>> GetAll()
@@ -17,6 +25,8 @@ public class WalletController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> Create([FromBody] WalletDto wallet)
     {
-        throw new NotImplementedException();
+        await _walletService.Create(wallet);
+
+        return Ok();
     }
 }
