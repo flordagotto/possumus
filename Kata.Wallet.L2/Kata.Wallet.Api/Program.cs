@@ -5,6 +5,7 @@ using Kata.Wallet.Database.DI;
 using Kata.Wallet.Services.DI;
 using Kata.Wallet.Services.Exceptions;
 using System.Text.Json.Serialization;
+using static Kata.Wallet.Database.DataContext;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,5 +49,11 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<DataContext>();
+    await DbContextSeed.SeedAsync(context);
+}
 
 app.Run();
