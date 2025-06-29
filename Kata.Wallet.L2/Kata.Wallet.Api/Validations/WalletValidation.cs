@@ -28,4 +28,14 @@ namespace Kata.Wallet.Api.Validations
                 .WithMessage("Name should be a valid name and have a maximum of 50 characters");
         }
     }
+    public class WalletFiltersValidation : AbstractValidator<WalletFiltersDto>
+    {
+        public WalletFiltersValidation()
+        {
+            RuleFor(x => x.Currency)
+                .IsInEnum()
+                .When(x => x.Currency.HasValue)
+                .WithMessage("The currency is invalid.");
+        }
+    }
 }

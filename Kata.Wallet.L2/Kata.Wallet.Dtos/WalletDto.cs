@@ -10,3 +10,9 @@ public class WalletDto
     public string? UserName { get; set; }
     public Currency Currency { get; set; }
 }
+
+public class WalletFiltersDto
+{
+    public string? UserDocument { get; set; }
+    public Currency? Currency { get; set; }
+}
