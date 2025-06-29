@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Kata.Wallet.Api\Kata.Wallet.Api.csproj" />
     <ProjectReference Include="..\Kata.Wallet.Services\Kata.Wallet.Services.csproj" />
   </ItemGroup>
 

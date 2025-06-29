@@ -38,11 +38,12 @@ namespace Kata.Wallet.Services.Services
 
                 ValidateTransaction(transactionDto, originWallet, destinationWallet);
 
-                transactionDto.Id = Guid.NewGuid();
-
-                transactionDto.Date = DateTime.UtcNow;
-
                 var transaction = _mapper.Map<Transaction>(transactionDto);
+
+                transaction.Id = Guid.NewGuid();
+                transaction.Date = DateTime.UtcNow;
+                transaction.WalletIncoming = destinationWallet!;
+                transaction.WalletOutgoing = originWallet!;
 
                 originWallet!.Balance -= transactionDto.Amount;
                 destinationWallet!.Balance += transactionDto.Amount;

@@ -7,7 +7,7 @@ namespace Kata.Wallet.Database.Repositories
     {
         Task Add(Domain.Wallet wallet);
         Task<Domain.Wallet?> GetById(int id);
-        Task<List<Domain.Wallet>> GetAll(string? document, Currency? currency);
+        Task<IEnumerable<Domain.Wallet>> GetAll(string? document, Currency? currency);
     }
 
     public class WalletRepository : IWalletRepository
@@ -28,7 +28,7 @@ namespace Kata.Wallet.Database.Repositories
 
         public async Task<Domain.Wallet?> GetById(int id) => await _dbContext.Wallets.FirstOrDefaultAsync(x => x.Id == id);
 
-        public async Task<List<Domain.Wallet>> GetAll(string? document, Currency? currency)
+        public async Task<IEnumerable<Domain.Wallet>> GetAll(string? document, Currency? currency)
         {
             IQueryable<Domain.Wallet> query = _dbContext.Wallets
                 .Include(t => t.IncomingTransactions)

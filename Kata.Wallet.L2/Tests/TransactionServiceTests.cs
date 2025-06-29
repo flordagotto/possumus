@@ -1,4 +1,6 @@
+using AutoMapper;
 using FluentAssertions;
+using Kata.Wallet.Api.AutoMapper;
 using Kata.Wallet.Database.Repositories;
 using Kata.Wallet.Domain;
 using Kata.Wallet.Dtos;
@@ -19,6 +21,14 @@ namespace UnitTests
         public void Setup()
         {
             _mocker = new AutoMocker();
+
+            var configuration = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile(new AutoMapperProfile());
+            });
+            var realMapper = configuration.CreateMapper();
+
+            _mocker.Use<IMapper>(realMapper);
 
             _service = _mocker.CreateInstance<TransactionService>();
         }
