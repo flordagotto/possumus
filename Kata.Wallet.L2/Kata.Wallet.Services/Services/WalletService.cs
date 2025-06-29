@@ -56,7 +56,7 @@ namespace Kata.Wallet.Services.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message, $"Error retrieving wallets, please try again.");
+                _logger.LogError(ex.Message, "Error retrieving wallets, please try again.");
                 throw;
             }
         }
@@ -69,11 +69,11 @@ namespace Kata.Wallet.Services.Services
                 throw new WalletAlreadyExistsException($"The wallet with id {wallet.Id} already exists");
         }
 
-        private List<WalletDto> MapWallets(List<Domain.Wallet> wallets)
+        private List<WalletDto> MapWallets(IEnumerable<Domain.Wallet> wallets)
         {
-            List<WalletDto> walletDtos = new List<WalletDto>();
+            List<WalletDto> walletDtos = new();
 
-            if (wallets != null && wallets.Count != 0)
+            if (wallets != null && wallets.Any())
             {
                 foreach (var wallet in wallets)
                 {

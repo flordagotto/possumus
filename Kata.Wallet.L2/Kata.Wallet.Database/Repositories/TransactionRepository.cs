@@ -1,8 +1,12 @@
-﻿namespace Kata.Wallet.Database.Repositories
+﻿using Kata.Wallet.Domain;
+using Microsoft.EntityFrameworkCore;
+
+namespace Kata.Wallet.Database.Repositories
 {
     public interface ITransactionRepository
     {
         Task Add(Domain.Transaction transaction);
+        Task<IEnumerable<Transaction>> GetByWalletId(int walletId);
     }
 
     public class TransactionRepository : ITransactionRepository
@@ -14,9 +18,18 @@
             _dbContext = dbContext;
         }
 
-        public async Task Add(Domain.Transaction transaction)
+        public async Task Add(Transaction transaction)
         {
             await _dbContext.Transactions.AddAsync(transaction);
+        }
+
+        public async Task<IEnumerable<Transaction>> GetByWalletId(int walletId)
+        {
+            return await _dbContext.Transactions
+                .Include(t => t.WalletIncoming)
+                .Include(t => t.WalletOutgoing)
+                .Where(t => t.WalletOutgoing.Id == walletId || t.WalletIncoming.Id == walletId)
+                .ToListAsync();
         }
     }
 }

@@ -10,6 +10,7 @@ namespace Kata.Wallet.Services.Services
     public interface ITransactionService
     {
         Task Create(TransactionDto transaction);
+        Task<List<TransactionDto>> GetTransactionsFromWallet(int walletId);
     }
 
     public class TransactionService : ITransactionService
@@ -38,11 +39,12 @@ namespace Kata.Wallet.Services.Services
 
                 ValidateTransaction(transactionDto, originWallet, destinationWallet);
 
-                transactionDto.Id = Guid.NewGuid();
-
-                transactionDto.Date = DateTime.UtcNow;
-
                 var transaction = _mapper.Map<Transaction>(transactionDto);
+
+                transaction.Id = Guid.NewGuid();
+                transaction.Date = DateTime.UtcNow;
+                transaction.WalletIncoming = destinationWallet!;
+                transaction.WalletOutgoing = originWallet!;
 
                 originWallet!.Balance -= transactionDto.Amount;
                 destinationWallet!.Balance += transactionDto.Amount;
@@ -54,6 +56,23 @@ namespace Kata.Wallet.Services.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message, $"Error creating the transaction, please try again.");
+                throw;
+            }
+        }
+
+        public async Task<List<TransactionDto>> GetTransactionsFromWallet(int walletId)
+        {
+            try
+            {
+                var transactions = await _transactionRepository.GetByWalletId(walletId);
+
+                var transactionDtos = MapTransactions(transactions);
+
+                return transactionDtos;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, $"Error retrieving transactions from wallet {walletId}, please try again.");
                 throw;
             }
         }
@@ -74,6 +93,26 @@ namespace Kata.Wallet.Services.Services
 
             if (originWallet.Balance < transactionDto.Amount)
                 throw new InsufficientBalanceException($"Wallet with id {transactionDto.OriginWalletId} does not have enough balance to make this operation.");
+        }
+
+        private List<TransactionDto> MapTransactions(IEnumerable<Domain.Transaction> transactions)
+        {
+            List<TransactionDto> transactionDtos = new();
+
+            if (transactions != null && transactions.Any())
+            {
+                foreach (var transaction in transactions)
+                {
+                    var transactionDto = _mapper.Map<TransactionDto>(transaction);
+
+                    transactionDto.OriginWalletId = transaction.WalletOutgoing.Id;
+                    transactionDto.DestinationWalletId = transaction.WalletIncoming.Id;
+
+                    transactionDtos.Add(transactionDto);
+                }
+            }
+
+            return transactionDtos;
         }
     }
 }
