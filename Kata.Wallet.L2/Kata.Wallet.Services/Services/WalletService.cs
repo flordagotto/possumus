@@ -9,7 +9,7 @@ namespace Kata.Wallet.Services.Services
 {
     public interface IWalletService
     {
-        Task Create(WalletDto wallet);
+        Task<int> Create(WalletDto wallet);
 
         Task<List<WalletDto>> GetAll(string? document, Currency? currency);
     }
@@ -27,7 +27,7 @@ namespace Kata.Wallet.Services.Services
             _logger = logger;
         }
 
-        public async Task Create(WalletDto walletDto)
+        public async Task<int> Create(WalletDto walletDto)
         {
             try
             {
@@ -36,6 +36,8 @@ namespace Kata.Wallet.Services.Services
                 var wallet = _mapper.Map<Domain.Wallet>(walletDto);
 
                 await _walletRepository.Add(wallet);
+
+                return wallet.Id;
             }
             catch (Exception ex)
             {

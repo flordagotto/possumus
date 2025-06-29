@@ -9,7 +9,7 @@ namespace Kata.Wallet.Services.Services
 {
     public interface ITransactionService
     {
-        Task Create(TransactionDto transaction);
+        Task<Guid> Create(TransactionDto transaction);
         Task<List<TransactionDto>> GetTransactionsFromWallet(int walletId);
     }
 
@@ -30,7 +30,7 @@ namespace Kata.Wallet.Services.Services
             _logger = logger;
         }
 
-        public async Task Create(TransactionDto transactionDto)
+        public async Task<Guid> Create(TransactionDto transactionDto)
         {
             try
             {
@@ -52,6 +52,8 @@ namespace Kata.Wallet.Services.Services
                 await _transactionRepository.Add(transaction);
 
                 await _unitOfWork.SaveChangesAsync();
+
+                return transaction.Id;
             }
             catch (Exception ex)
             {
