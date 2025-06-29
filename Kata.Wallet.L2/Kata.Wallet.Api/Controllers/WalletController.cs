@@ -1,4 +1,5 @@
-﻿using Kata.Wallet.Dtos;
+﻿using Kata.Wallet.Domain;
+using Kata.Wallet.Dtos;
 using Kata.Wallet.Services.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,9 +18,9 @@ public class WalletController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<Domain.Wallet>>> GetAll()
+    public async Task<ActionResult<List<Domain.Wallet>>> GetAll([FromQuery] string? document, Currency? currency)
     {
-        throw new NotImplementedException();
+        return Ok(await _walletService.GetAll(document, currency));
     }
 
     [HttpPost]

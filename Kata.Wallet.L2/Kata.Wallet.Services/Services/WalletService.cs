@@ -4,13 +4,14 @@ using Kata.Wallet.Domain;
 using Kata.Wallet.Dtos;
 using Kata.Wallet.Services.Exceptions;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 
 namespace Kata.Wallet.Services.Services
 {
     public interface IWalletService
     {
         Task Create(WalletDto wallet);
+
+        Task<List<WalletDto>> GetAll(string? document, Currency? currency);
     }
 
     public class WalletService : IWalletService
@@ -43,11 +44,11 @@ namespace Kata.Wallet.Services.Services
             }
         }
 
-        public async Task<List<WalletDto>> GetAll(WalletFiltersDto walletFiltersDto)
+        public async Task<List<WalletDto>> GetAll(string? document, Currency? currency)
         {
             try
             {
-                var wallets = await _walletRepository.GetAll(walletFiltersDto.UserDocument, walletFiltersDto.Currency);
+                var wallets = await _walletRepository.GetAll(document, currency);
 
                 var walletDtos = MapWallets(wallets);
 
