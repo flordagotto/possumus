@@ -1,6 +1,6 @@
 ﻿namespace Kata.Wallet.Services.Exceptions
 {
-    internal class WalletDoesNotExistException : BadRequestException
+    public class WalletDoesNotExistException : BadRequestException
     {
         public WalletDoesNotExistException()
         {

@@ -1,6 +1,6 @@
 ﻿namespace Kata.Wallet.Services.Exceptions
 {
-    internal class WalletsCurrenciesDoNotMatchException : BadRequestException
+    public class WalletsCurrenciesDoNotMatchException : BadRequestException
     {
         public WalletsCurrenciesDoNotMatchException()
         {

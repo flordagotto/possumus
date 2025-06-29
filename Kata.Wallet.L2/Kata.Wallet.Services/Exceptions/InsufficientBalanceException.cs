@@ -1,6 +1,6 @@
 ﻿namespace Kata.Wallet.Services.Exceptions
 {
-    internal class InsufficientBalanceException : BadRequestException
+    public class InsufficientBalanceException : BadRequestException
     {
         public InsufficientBalanceException()
         {
