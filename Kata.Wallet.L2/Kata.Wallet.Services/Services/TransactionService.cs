@@ -10,6 +10,7 @@ namespace Kata.Wallet.Services.Services
     public interface ITransactionService
     {
         Task Create(TransactionDto transaction);
+        Task<List<TransactionDto>> GetTransactionsFromWallet(int walletId);
     }
 
     public class TransactionService : ITransactionService

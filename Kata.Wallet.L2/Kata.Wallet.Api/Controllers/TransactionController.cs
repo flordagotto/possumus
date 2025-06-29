@@ -17,9 +17,9 @@ public class TransactionController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<Domain.Transaction>>> GetAll()
+    public async Task<ActionResult<List<Domain.Transaction>>> GetAll([FromQuery] int walletId)
     {
-        throw new NotImplementedException();
+        return Ok(await _transactionService.GetTransactionsFromWallet(walletId));
     }
 
     [HttpPost]
