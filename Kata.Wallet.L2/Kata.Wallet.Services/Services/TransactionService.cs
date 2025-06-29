@@ -59,6 +59,23 @@ namespace Kata.Wallet.Services.Services
             }
         }
 
+        public async Task<List<TransactionDto>> GetTransactionsFromWallet(int walletId)
+        {
+            try
+            {
+                var transactions = await _transactionRepository.GetByWalletId(walletId);
+
+                var transactionDtos = MapTransactions(transactions);
+
+                return transactionDtos;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, $"Error retrieving transactions from wallet {walletId}, please try again.");
+                throw;
+            }
+        }
+
         private static void ValidateTransaction(TransactionDto transactionDto, Domain.Wallet? originWallet, Domain.Wallet? destinationWallet)
         {
             if (originWallet == null)
@@ -75,6 +92,22 @@ namespace Kata.Wallet.Services.Services
 
             if (originWallet.Balance < transactionDto.Amount)
                 throw new InsufficientBalanceException($"Wallet with id {transactionDto.OriginWalletId} does not have enough balance to make this operation.");
+        }
+
+        private List<TransactionDto> MapTransactions(IEnumerable<Domain.Transaction> transactions)
+        {
+            List<TransactionDto> transactionDtos = new();
+
+            if (transactions != null && transactions.Any())
+            {
+                foreach (var transaction in transactions)
+                {
+                    var transactionDto = _mapper.Map<TransactionDto>(transaction);
+                    transactionDtos.Add(transactionDto);
+                }
+            }
+
+            return transactionDtos;
         }
     }
 }
