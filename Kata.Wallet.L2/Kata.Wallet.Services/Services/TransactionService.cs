@@ -39,10 +39,14 @@ namespace Kata.Wallet.Services.Services
 
                 ValidateTransaction(transactionDto, originWallet, destinationWallet);
 
+                transactionDto.Id = Guid.NewGuid();
+
+                transactionDto.Date = DateTime.UtcNow;
+
                 var transaction = _mapper.Map<Transaction>(transactionDto);
 
-                originWallet!.Balance -= transaction.Amount;
-                destinationWallet!.Balance += transaction.Amount;
+                originWallet!.Balance -= transactionDto.Amount;
+                destinationWallet!.Balance += transactionDto.Amount;
 
                 await _transactionRepository.Add(transaction);
 
@@ -65,6 +69,9 @@ namespace Kata.Wallet.Services.Services
 
             if (originWallet.Currency != destinationWallet.Currency)
                 throw new WalletsCurrenciesDoNotMatchException("Wallets' currencies don't match.");
+
+            if (originWallet == destinationWallet)
+                throw new TransactionMustBeBetweenDifferentAccountsException("Origin and destination wallet can not be the same.");
 
             if (originWallet.Balance < transactionDto.Amount)
                 throw new InsufficientBalanceException($"Wallet with id {transactionDto.OriginWalletId} does not have enough balance to make this operation.");

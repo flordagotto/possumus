@@ -7,6 +7,12 @@ namespace Kata.Wallet.Api.Validations
     {
         public TransactionValidation()
         {
+            RuleFor(x => x.Id)
+                .Empty().WithMessage("The transaction id is automatically set");
+
+            RuleFor(x => x.Date)
+                .Empty().WithMessage("The transaction date is automatically set");
+
             RuleFor(x => x.Amount)
                 .GreaterThan(0).WithMessage("The transfer amount must be greater than 0.");
 
