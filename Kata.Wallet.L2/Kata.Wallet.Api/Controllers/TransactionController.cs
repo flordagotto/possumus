@@ -9,11 +9,11 @@ namespace Kata.Wallet.API.Controllers;
 public class TransactionController : ControllerBase
 {
 
-    //public readonly IWalletService _walletService;
+    public readonly ITransactionService _transactionService;
 
-    public TransactionController(/*IWalletService walletService*/)
+    public TransactionController(ITransactionService transactionService)
     {
-        //_walletService = walletService;
+        _transactionService = transactionService;
     }
 
     [HttpGet]
@@ -25,6 +25,7 @@ public class TransactionController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> Create([FromBody] TransactionDto transaction)
     {
-        throw new NotImplementedException();
+        await _transactionService.Create(transaction);
+        return Ok();
     }
 }
