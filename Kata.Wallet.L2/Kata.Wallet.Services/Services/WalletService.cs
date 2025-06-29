@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Kata.Wallet.Database.Repositories;
 using Kata.Wallet.Dtos;
+using Kata.Wallet.Services.Exceptions;
 using Microsoft.Extensions.Logging;
 
 namespace Kata.Wallet.Services.Services
@@ -27,6 +28,8 @@ namespace Kata.Wallet.Services.Services
         {
             try
             {
+                await CheckIfWalletAlreadyExists(walletDto);
+
                 var wallet = _mapper.Map<Domain.Wallet>(walletDto);
 
                 await _walletRepository.Add(wallet);
@@ -36,6 +39,14 @@ namespace Kata.Wallet.Services.Services
                 _logger.LogError(ex.Message, $"Error creating a wallet for user {walletDto.UserName}.");
                 throw;
             }
+        }
+
+        private async Task CheckIfWalletAlreadyExists(WalletDto walletDto)
+        {
+            var wallet = await _walletRepository.GetById(walletDto.Id);
+
+            if (wallet != null)
+                throw new WalletAlreadyExistsException();
         }
     }
 }
