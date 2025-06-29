@@ -17,8 +17,6 @@
         public async Task Add(Domain.Transaction transaction)
         {
             await _dbContext.Transactions.AddAsync(transaction);
-
-            await _dbContext.SaveChangesAsync();
         }
     }
 }

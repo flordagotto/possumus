@@ -8,6 +8,7 @@ namespace Kata.Wallet.Services.DI
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
             services.AddScoped<IWalletService, WalletService>();
+            services.AddScoped<ITransactionService, TransactionService>();
 
             return services;
         }

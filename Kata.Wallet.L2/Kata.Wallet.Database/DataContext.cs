@@ -1,10 +1,11 @@
-﻿using Kata.Wallet.Domain;
+﻿using Kata.Wallet.Database.Repositories;
+using Kata.Wallet.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace Kata.Wallet.Database;
 
-public class DataContext : DbContext
+public class DataContext : DbContext, IUnitOfWork
 {
     protected readonly IConfiguration Configuration;
 

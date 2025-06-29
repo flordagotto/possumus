@@ -17,13 +17,15 @@ namespace Kata.Wallet.Services.Services
     {
         public readonly ITransactionRepository _transactionRepository;
         public readonly IWalletRepository _walletRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILogger<TransactionService> _logger;
 
-        public TransactionService(ITransactionRepository transactionRepository, IWalletRepository walletRepository, IMapper mapper, ILogger<TransactionService> logger)
+        public TransactionService(ITransactionRepository transactionRepository, IWalletRepository walletRepository, IUnitOfWork unitOfWork, IMapper mapper, ILogger<TransactionService> logger)
         {
             _transactionRepository = transactionRepository;
             _walletRepository = walletRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _logger = logger;
         }
@@ -32,11 +34,19 @@ namespace Kata.Wallet.Services.Services
         {
             try
             {
-                await ValidateTransaction(transactionDto);
+                var originWallet = await _walletRepository.GetById(transactionDto.OriginWalletId);
+                var destinationWallet = await _walletRepository.GetById(transactionDto.DestinationWalletId);
+
+                ValidateTransaction(transactionDto, originWallet, destinationWallet);
 
                 var transaction = _mapper.Map<Transaction>(transactionDto);
 
+                originWallet!.Balance -= transaction.Amount;
+                destinationWallet!.Balance += transaction.Amount;
+
                 await _transactionRepository.Add(transaction);
+
+                await _unitOfWork.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -45,11 +55,8 @@ namespace Kata.Wallet.Services.Services
             }
         }
 
-        private async Task ValidateTransaction(TransactionDto transactionDto)
+        private static void ValidateTransaction(TransactionDto transactionDto, Domain.Wallet? originWallet, Domain.Wallet? destinationWallet)
         {
-            var originWallet = await _walletRepository.GetById(transactionDto.OriginWalletId);
-            var destinationWallet = await _walletRepository.GetById(transactionDto.DestinationWalletId);
-
             if (originWallet == null)
                 throw new WalletDoesNotExistException($"Wallet with id {transactionDto.OriginWalletId} does not exist.");
 
