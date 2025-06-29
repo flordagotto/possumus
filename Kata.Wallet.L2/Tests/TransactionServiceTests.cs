@@ -1,5 +1,3 @@
-using AutoMapper;
-using Castle.Core.Logging;
 using FluentAssertions;
 using Kata.Wallet.Database.Repositories;
 using Kata.Wallet.Domain;
