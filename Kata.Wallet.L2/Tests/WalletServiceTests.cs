@@ -55,13 +55,19 @@ namespace UnitTests
         [Test]
         public async Task GetAll_HappyPath()
         {
-            var walletDto1 = new WalletDto { Id = 1, Balance = 100, Currency = Currency.ARS, UserDocument = "123456789", UserName = "Florencia Dagotto" };
-            var walletDto2 = new WalletDto { Id = 2, Balance = 200, Currency = Currency.USD, UserDocument = "123456789", UserName = "Florencia Dagotto" };
-            var walletDto = new WalletDto { Id = 3, Balance = 200, Currency = Currency.USD, UserDocument = "987654321", UserName = "Juan Medina" };
+            var userDocument = "123456789";
 
-            await _service.GetAll("123456789", null);
+            var wallet1 = new Wallet { Id = 1, Balance = 100, Currency = Currency.ARS, UserDocument = "123456789", UserName = "Florencia Dagotto" };
+            var wallet2 = new Wallet { Id = 2, Balance = 200, Currency = Currency.USD, UserDocument = "123456789", UserName = "Florencia Dagotto" };
+            var wallet3 = new Wallet { Id = 3, Balance = 200, Currency = Currency.USD, UserDocument = "987654321", UserName = "Juan Medina" };
 
-            _mocker.GetMock<IWalletRepository>().Verify(x => x.GetAll(It.IsAny<string>(), It.IsAny<Currency>()), Times.Once);
+            var filteredWallets = new List<Wallet> { wallet1, wallet2 };
+
+            _mocker.GetMock<IWalletRepository>().Setup(x => x.GetAll(It.IsAny<string>(), It.IsAny<Currency>())).ReturnsAsync(filteredWallets);
+
+            await _service.GetAll(userDocument, null);
+
+            _mocker.GetMock<IWalletRepository>().Verify(x => x.GetAll(userDocument, null), Times.Once);
         }
     }
 }

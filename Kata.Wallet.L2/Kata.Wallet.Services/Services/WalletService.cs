@@ -4,6 +4,7 @@ using Kata.Wallet.Domain;
 using Kata.Wallet.Dtos;
 using Kata.Wallet.Services.Exceptions;
 using Microsoft.Extensions.Logging;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Kata.Wallet.Services.Services
 {
@@ -71,14 +72,17 @@ namespace Kata.Wallet.Services.Services
 
         private List<WalletDto> MapWallets(List<Domain.Wallet> wallets)
         {
-            List < WalletDto > walletDtos = new List < WalletDto >();
+            List<WalletDto> walletDtos = new List<WalletDto>();
 
-            foreach (var wallet in wallets)
+            if (wallets != null && wallets.Count != 0)
             {
-                var walletDto = _mapper.Map<WalletDto>(wallet);
-                walletDtos.Add(walletDto);
+                foreach (var wallet in wallets)
+                {
+                    var walletDto = _mapper.Map<WalletDto>(wallet);
+                    walletDtos.Add(walletDto);
+                }
             }
-
+            
             return walletDtos;
         }
     }
