@@ -79,6 +79,46 @@ namespace IntegrationTests
             result.Currency.Should().Be(Currency.ARS);
         }
 
+        [Test]
+        public async Task CreateWallet_WhenWalletAlreadyExists_ShouldReturnBadRequest()
+        {
+            // Arrange
+            var wallet = new WalletDto
+            {
+                Id = 1,
+                Balance = 10000m,
+                UserDocument = "23456789",
+                UserName = "Camila Perez",
+                Currency = Currency.ARS
+            };
+
+            // Act
+            var response = await _client.PostAsJsonAsync("api/wallet", wallet);
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+            var rawJson = await response.Content.ReadAsStringAsync();
+            
+            rawJson.Should().NotBeNull();
+            rawJson.Should().Contain("The wallet with id 1 already exists");
+        }
+
+        [Test]
+        public async Task GetAll_ShouldReturnAllWallets()
+        {
+            // Act
+            var response = await _client.GetAsync("api/wallet");
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var rawJson = await response.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<List<WalletDto>>(rawJson, _options);
+
+            result.Should().NotBeNull();
+            result.Count.Should().Be(4);
+        }
 
         [TearDown]
         public void TearDown()
