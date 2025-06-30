@@ -43,7 +43,7 @@ namespace Kata.Wallet.Services.Services
 
                 transaction.Id = Guid.NewGuid();
                 transaction.Date = DateTime.UtcNow;
-
+                
                 originWallet!.Balance -= transactionDto.Amount;
                 originWallet.OutgoingTransactions!.Add(transaction);
 

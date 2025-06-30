@@ -8,7 +8,7 @@ namespace IntegrationTests.Utils
 {
     public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram> where TProgram : class
     {
-        private readonly string _databaseName = Guid.NewGuid().ToString(); // Aislado por test
+        private readonly string _databaseName = Guid.NewGuid().ToString();
 
         public DataContext DbContext { get; private set; } = null!;
 
@@ -16,20 +16,17 @@ namespace IntegrationTests.Utils
         {
             builder.ConfigureServices(services =>
             {
-                // Eliminar configuración anterior de DbContext
                 var descriptor = services.SingleOrDefault(
                     d => d.ServiceType == typeof(DbContextOptions<DataContext>));
 
                 if (descriptor != null)
                     services.Remove(descriptor);
 
-                // Configurar un DbContext con nombre único por instancia
                 services.AddDbContext<DataContext>(options =>
                 {
                     options.UseInMemoryDatabase(_databaseName);
                 });
 
-                // Construir el proveedor de servicios y preparar contexto para test
                 var sp = services.BuildServiceProvider();
 
                 using var scope = sp.CreateScope();
