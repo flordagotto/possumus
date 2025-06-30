@@ -24,7 +24,7 @@ namespace Kata.Wallet.Api.Validations
             RuleFor(x => x.UserName)
                 .NotEmpty()
                 .MaximumLength(50)
-                .Matches("^[a-zA-Z]+$")
+                .Matches(@"^[a-zA-Z\s]+$")
                 .WithMessage("Name should be a valid name and have a maximum of 50 characters");
         }
     }

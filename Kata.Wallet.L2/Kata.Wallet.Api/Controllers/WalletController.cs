@@ -26,6 +26,7 @@ public class WalletController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> Create([FromBody] WalletDto wallet)
     {
-        return CreatedAtAction(nameof(Create), new { id = await _walletService.Create(wallet) });
+        var createdWallet = await _walletService.Create(wallet);
+        return CreatedAtAction(nameof(Create), new { id = createdWallet.Id }, createdWallet);
     }
 }

@@ -9,11 +9,17 @@ public class DataContext : DbContext, IUnitOfWork
 {
     protected readonly IConfiguration Configuration;
 
-    public DataContext(IConfiguration configuration) => Configuration = configuration;
-
-    protected override void OnConfiguring(DbContextOptionsBuilder options)
+    public DataContext(DbContextOptions<DataContext> options)
+        : base(options)
     {
-        options.UseInMemoryDatabase("WalletDb");
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseInMemoryDatabase("WalletDb");
+        }
     }
 
     public DbSet<Domain.Wallet> Wallets { get; set; }
