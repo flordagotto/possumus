@@ -76,6 +76,38 @@ namespace IntegrationTests
             }
         }
 
+        [Test]
+        public async Task CreateTransaction_WhenWalletDoesNotExist()
+        {
+            // Arrange
+            using (var scope = _factory.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<DataContext>();
+                context.Wallets.Add(
+                    new Wallet { Id = 10, Balance = 1000, Currency = Currency.ARS, UserName = "Josefina", UserDocument = "11111111" }
+                );
+                await context.SaveChangesAsync();
+            }
+
+            var transaction = new TransactionDto
+            {
+                OriginWalletId = 10,
+                DestinationWalletId = 20,
+                Amount = 100,
+                Description = "Money loan"
+            };
+
+            // Act
+            var response = await _client.PostAsJsonAsync("api/transaction", transaction);
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+            var rawJson = await response.Content.ReadAsStringAsync();
+
+            rawJson.Should().NotBeNull();
+            rawJson.Should().Contain("Wallet with id 20 does not exist.");
+        }
 
         [TearDown]
         public void TearDown()

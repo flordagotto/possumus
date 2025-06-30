@@ -29,7 +29,7 @@ public class WalletController : ControllerBase
         return CreatedAtAction(nameof(Create), new { id = createdWallet.Id }, createdWallet);
     }
 
-    [HttpGet]
+    [HttpGet("id")]
     public async Task<ActionResult<WalletDto>> GetById([FromQuery] int id)
     {
         return Ok(await _walletService.GetById(id));
