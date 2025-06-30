@@ -9,7 +9,6 @@ namespace Kata.Wallet.API.Controllers;
 [Route("api/[controller]")]
 public class WalletController : ControllerBase
 {
-
     public readonly IWalletService _walletService;
 
     public WalletController(IWalletService walletService)
@@ -18,7 +17,7 @@ public class WalletController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<Domain.Wallet>>> GetAll([FromQuery] string? document, Currency? currency)
+    public async Task<ActionResult<List<WalletDto>>> GetAll([FromQuery] string? document, Currency? currency)
     {
         return Ok(await _walletService.GetAll(document, currency));
     }
@@ -26,6 +25,13 @@ public class WalletController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> Create([FromBody] WalletDto wallet)
     {
-        return CreatedAtAction(nameof(Create), new { id = await _walletService.Create(wallet) });
+        var createdWallet = await _walletService.Create(wallet);
+        return CreatedAtAction(nameof(Create), new { id = createdWallet.Id }, createdWallet);
+    }
+
+    [HttpGet("id")]
+    public async Task<ActionResult<WalletDto>> GetById([FromQuery] int id)
+    {
+        return Ok(await _walletService.GetById(id));
     }
 }

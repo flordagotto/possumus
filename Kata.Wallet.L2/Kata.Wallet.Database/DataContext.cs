@@ -9,15 +9,26 @@ public class DataContext : DbContext, IUnitOfWork
 {
     protected readonly IConfiguration Configuration;
 
-    public DataContext(IConfiguration configuration) => Configuration = configuration;
-
-    protected override void OnConfiguring(DbContextOptionsBuilder options)
+    public DataContext(DbContextOptions<DataContext> options)
+        : base(options)
     {
-        options.UseInMemoryDatabase("WalletDb");
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseInMemoryDatabase("WalletDb");
+        }
     }
 
     public DbSet<Domain.Wallet> Wallets { get; set; }
     public DbSet<Transaction> Transactions { get; set; }
+
+    public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        return base.SaveChangesAsync(cancellationToken);
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -38,6 +49,9 @@ public class DataContext : DbContext, IUnitOfWork
     {
         public static async Task SeedAsync(DataContext context)
         {
+            if (context.Wallets.Any())
+                return;
+
             context.Wallets.AddRange(
                 new Domain.Wallet
                 {

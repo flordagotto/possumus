@@ -7,8 +7,8 @@ public class Wallet
     public string UserDocument { get; set; }
     public string UserName { get; set; } 
     public Currency Currency { get; set; }
-    public List<Transaction>? IncomingTransactions { get; set; }
-    public List<Transaction>? OutgoingTransactions { get; set; }
+    public List<Transaction>? IncomingTransactions { get; set; } = new List<Transaction>();
+    public List<Transaction>? OutgoingTransactions { get; set; } = new List<Transaction>();
 }
 
 public enum Currency
