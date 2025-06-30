@@ -26,6 +26,7 @@ public class TransactionController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> Create([FromBody] TransactionDto transaction)
     {
-        return CreatedAtAction(nameof(Create), new { id = await _transactionService.Create(transaction) });
+        var createdTransaction = await _transactionService.Create(transaction);
+        return CreatedAtAction(nameof(Create), new { id = createdTransaction.Id }, createdTransaction);
     }
 }

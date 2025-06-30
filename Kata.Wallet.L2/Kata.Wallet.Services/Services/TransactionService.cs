@@ -9,7 +9,7 @@ namespace Kata.Wallet.Services.Services
 {
     public interface ITransactionService
     {
-        Task<Guid> Create(TransactionDto transaction);
+        Task<TransactionDto> Create(TransactionDto transaction);
         Task<List<TransactionDto>> GetTransactionsFromWallet(int walletId);
     }
 
@@ -30,7 +30,7 @@ namespace Kata.Wallet.Services.Services
             _logger = logger;
         }
 
-        public async Task<Guid> Create(TransactionDto transactionDto)
+        public async Task<TransactionDto> Create(TransactionDto transactionDto)
         {
             try
             {
@@ -43,17 +43,23 @@ namespace Kata.Wallet.Services.Services
 
                 transaction.Id = Guid.NewGuid();
                 transaction.Date = DateTime.UtcNow;
-                transaction.WalletIncoming = destinationWallet!;
-                transaction.WalletOutgoing = originWallet!;
 
                 originWallet!.Balance -= transactionDto.Amount;
+                originWallet.OutgoingTransactions!.Add(transaction);
+
                 destinationWallet!.Balance += transactionDto.Amount;
+                destinationWallet.IncomingTransactions!.Add(transaction);
+
+                transaction.WalletIncoming = destinationWallet!;
+                transaction.WalletOutgoing = originWallet!;
 
                 await _transactionRepository.Add(transaction);
 
                 await _unitOfWork.SaveChangesAsync();
 
-                return transaction.Id;
+                var result = MapTransaction(transaction);
+
+                return result;
             }
             catch (Exception ex)
             {
@@ -105,16 +111,23 @@ namespace Kata.Wallet.Services.Services
             {
                 foreach (var transaction in transactions)
                 {
-                    var transactionDto = _mapper.Map<TransactionDto>(transaction);
-
-                    transactionDto.OriginWalletId = transaction.WalletOutgoing.Id;
-                    transactionDto.DestinationWalletId = transaction.WalletIncoming.Id;
+                    var transactionDto = MapTransaction(transaction);
 
                     transactionDtos.Add(transactionDto);
                 }
             }
 
             return transactionDtos;
+        }
+
+        private TransactionDto MapTransaction(Transaction transaction)
+        {
+            var transactionDto = _mapper.Map<TransactionDto>(transaction);
+
+            transactionDto.OriginWalletId = transaction.WalletOutgoing.Id;
+            transactionDto.DestinationWalletId = transaction.WalletIncoming.Id;
+
+            return transactionDto;
         }
     }
 }

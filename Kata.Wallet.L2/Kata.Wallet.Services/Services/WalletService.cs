@@ -10,8 +10,8 @@ namespace Kata.Wallet.Services.Services
     public interface IWalletService
     {
         Task<WalletDto> Create(WalletDto wallet);
-
         Task<List<WalletDto>> GetAll(string? document, Currency? currency);
+        Task<WalletDto> GetById(int id);
     }
 
     public class WalletService : IWalletService
@@ -61,6 +61,21 @@ namespace Kata.Wallet.Services.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message, "Error retrieving wallets, please try again.");
+                throw;
+            }
+        }
+
+        public async Task<WalletDto> GetById(int id)
+        {
+            try
+            {
+                var wallet = await _walletRepository.GetById(id);
+
+                return _mapper.Map<WalletDto>(wallet); ;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, "Error retrieving wallet, please try again.");
                 throw;
             }
         }

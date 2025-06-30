@@ -25,6 +25,11 @@ public class DataContext : DbContext, IUnitOfWork
     public DbSet<Domain.Wallet> Wallets { get; set; }
     public DbSet<Transaction> Transactions { get; set; }
 
+    public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        return base.SaveChangesAsync(cancellationToken);
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -44,6 +49,9 @@ public class DataContext : DbContext, IUnitOfWork
     {
         public static async Task SeedAsync(DataContext context)
         {
+            if (context.Wallets.Any())
+                return;
+
             context.Wallets.AddRange(
                 new Domain.Wallet
                 {
